@@ -10,16 +10,14 @@ import com.tse.kanban.domain.TaskType;
 public interface TaskService {
 	
 	public Collection<Task> findAllTasks();
-	public Collection<TaskType> findAllTasksType();
-	public Collection<TaskStatus> findAllTasksStatus();
+	public Collection<TaskType> findAllTaskTypes();
+	public Collection<TaskStatus> findAllTaskStatuses();
 	public Task findTask(Long id);
 	public void moveRightTask(Task task);
 	public void moveLeftTask(Task task);
 	
 	
 	//ADDITIONAL
-	Collection<TaskType> findAllTaskTypes();
-	Collection<TaskStatus> findAllTaskStatus();
 	TaskType findTaskType(Long id);
 	TaskStatus findTaskStatus(Long id);
 }

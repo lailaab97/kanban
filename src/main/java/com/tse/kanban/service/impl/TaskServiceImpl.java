@@ -1,14 +1,17 @@
 package com.tse.kanban.service.impl;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tse.kanban.dao.ChangeLogRepository;
 import com.tse.kanban.dao.TaskRepository;
 import com.tse.kanban.dao.TaskStatusRepository;
 import com.tse.kanban.dao.TaskTypeRepository;
+import com.tse.kanban.domain.ChangeLog;
 import com.tse.kanban.domain.Task;
 import com.tse.kanban.domain.TaskStatus;
 import com.tse.kanban.domain.TaskType;
@@ -23,6 +26,8 @@ public class TaskServiceImpl implements TaskService {
 	private TaskTypeRepository taskTypeRepository;
 	@Autowired
 	private TaskStatusRepository taskStatusRepository;
+	@Autowired
+	private ChangeLogRepository changeLogRepository;
 	
 	
 	@Override
@@ -31,17 +36,6 @@ public class TaskServiceImpl implements TaskService {
 		return this.taskRepository.findAll();
 	}
 
-	@Override
-	@Transactional(readOnly = true)
-	public Collection<TaskType> findAllTasksType() {
-		return this.taskTypeRepository.findAll();
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public Collection<TaskStatus> findAllTasksStatus() {
-		return this.taskStatusRepository.findAll();
-	}
 
 
 	@Override
@@ -56,9 +50,16 @@ public class TaskServiceImpl implements TaskService {
 	@Transactional(readOnly = true)
 	public void moveLeftTask(Task task) {
 		Long statusId = task.getStatus().getId();
+		TaskStatus oldStatus = this.taskStatusRepository.findById(statusId).orElse(null);
 		TaskStatus status = this.taskStatusRepository.findById(statusId - 1).orElse(null);
 		task.setStatus(status);
 		System.out.println(statusId + " " + status.getId());
+		ChangeLog changeLog = new ChangeLog();
+		changeLog.setTask(task);
+		changeLog.setOccuredDate(LocalDate.now());
+		changeLog.setSourceStatus(oldStatus);
+		this.changeLogRepository.save(changeLog);
+		this.taskRepository.save(task);
 	}
 
 	@Override
@@ -67,11 +68,6 @@ public class TaskServiceImpl implements TaskService {
 		return this.taskTypeRepository.findAll();
 	}
 
-	@Override
-	@Transactional(readOnly = true)
-	public Collection<TaskStatus> findAllTaskStatus() {
-		return this.taskStatusRepository.findAll();
-	}
 
 	@Override
 	@Transactional(readOnly = true)
@@ -89,9 +85,28 @@ public class TaskServiceImpl implements TaskService {
 	@Transactional(readOnly = true)
 	public void moveRightTask(Task task) {
 		Long statusId = task.getStatus().getId();
-		TaskStatus status = this.taskStatusRepository.findById(statusId + 1).orElse(null);
-		task.setStatus(status);
-		System.out.println(statusId + " " + status.getId());
+		TaskStatus oldStatus = this.taskStatusRepository.findById(statusId).orElse(null);
+		TaskStatus newStatus = this.taskStatusRepository.findById(statusId + 1).orElse(null);
+		task.setStatus(newStatus);
+		System.out.println(statusId + " " + newStatus.getId());
+		ChangeLog changeLog = new ChangeLog();
+		changeLog.setTask(task);
+		changeLog.setOccuredDate(LocalDate.now());
+		changeLog.setSourceStatus(oldStatus);
+		this.changeLogRepository.save(changeLog);
+		this.taskRepository.save(task);
+	
+		
+		
+	}
+
+
+
+	
+	@Override
+	@Transactional(readOnly = true)
+	public Collection<TaskStatus> findAllTaskStatuses() {
+		return this.taskStatusRepository.findAll();
 	}
 
 

@@ -1,5 +1,6 @@
 package com.tse.kanban.domain;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -17,7 +18,7 @@ public class ChangeLog {
 	private @Id @GeneratedValue Long id;
 	@ManyToOne
 	private Task task;
-	private Date occuredDate;
+	private LocalDate occuredDate;
 	@ManyToOne
 	private TaskStatus sourceStatus;
 	@ManyToOne
@@ -43,7 +44,7 @@ public class ChangeLog {
 		super();
 	}
 
-	public ChangeLog(Long id, Task task, Date occuredDate) {
+	public ChangeLog(Long id, Task task, LocalDate occuredDate) {
 		super();
 		this.id = id;
 		this.task = task;
@@ -58,12 +59,12 @@ public class ChangeLog {
 		this.id = id;
 	}
 
-	public Date getOccuredDate() {
+	public LocalDate getOccuredDate() {
 		return occuredDate;
 	}
 
-	public void setOccuredDate(Date occuredDate) {
-		this.occuredDate = occuredDate;
+	public void setOccuredDate(LocalDate localDate) {
+		this.occuredDate = localDate;
 	}
 
 	public Task getTask() {

@@ -1,5 +1,7 @@
 package com.tse.kanban;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.Collection;
 
 import org.junit.Assert;
@@ -24,6 +26,21 @@ public class DeveloperRepositoryTest {
 	public void findAllDevelopersTest() {
 		Collection<Developer> developerList = this.developerRepository.findAll();
 		Assert.assertEquals(1,developerList.size());
+	}
+	
+	@Test 
+	public void testSaveDeveloper() {
+		Developer devTest = new Developer();
+		devTest.setEmail("devTest@dev.com");
+		devTest.setFirstname("devTestFirstName");
+		devTest.setLastname("devTestLastName");
+		devTest.setPassword("devTest");
+		devTest.setStartContract(LocalDate.of(2020, Month.NOVEMBER, 20));
+		developerRepository.save(devTest);
+		this.developerRepository.delete(devTest);
+		
+		Collection<Developer> developerList = this.developerRepository.findAll();
+		Assert.assertEquals(2,developerList.size());
 	}
 
 }

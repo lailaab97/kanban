@@ -20,18 +20,11 @@ public class TaskRepositoryTest {
 	@Autowired
 	private TaskRepository taskRepository;
 	
-//	@Test
-//	public void testFindAllTasks() {
-//		Collection<Task> taskList = this.taskRepository.findAll();
-//		Assert.assertEquals(1, taskList.size());
-//	}
-	
 	@Test
-	public void testAddDeveloper() {
-		Developer dev1 = new Developer();
-		Task task1 = new Task();
-		task1.addDeveloper(dev1);
-		Assert.assertEquals(1, task1.getDevelopers().size());
+	public void testFindAllTasks() {
+		Collection<Task> taskList = this.taskRepository.findAll();
+		Assert.assertEquals(1, taskList.size());
 	}
 	
+
 }

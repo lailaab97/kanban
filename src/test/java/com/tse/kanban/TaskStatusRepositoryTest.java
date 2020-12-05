@@ -22,6 +22,17 @@ public class TaskStatusRepositoryTest {
 	@Autowired
 	private TaskStatusRepository taskStatusRepository;
 	
+	
+	@Test
+	public void testSaveTaskType() {
+		TaskStatus status = new TaskStatus();
+		status.setLabel("TestLabel");
+		this.taskStatusRepository.save(status);
+		Collection<TaskStatus> taskStatusList = this.taskStatusRepository.findAll();
+		Assert.assertEquals(4, taskStatusList.size());
+		this.taskStatusRepository.delete(status);
+
+	}
 	@Test
 	public void testFindAllTaskStatus() {
 		Collection<TaskStatus> taskStatusList = this.taskStatusRepository.findAll();
