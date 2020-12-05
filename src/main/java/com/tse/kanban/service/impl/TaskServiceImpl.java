@@ -51,13 +51,14 @@ public class TaskServiceImpl implements TaskService {
 	public void moveLeftTask(Task task) {
 		Long statusId = task.getStatus().getId();
 		TaskStatus oldStatus = this.taskStatusRepository.findById(statusId).orElse(null);
-		TaskStatus status = this.taskStatusRepository.findById(statusId - 1).orElse(null);
-		task.setStatus(status);
-		System.out.println(statusId + " " + status.getId());
+		TaskStatus newStatus = this.taskStatusRepository.findById(statusId - 1).orElse(null);
+		task.setStatus(newStatus);
+		System.out.println(statusId + " " + newStatus.getId());
 		ChangeLog changeLog = new ChangeLog();
 		changeLog.setTask(task);
 		changeLog.setOccuredDate(LocalDate.now());
 		changeLog.setSourceStatus(oldStatus);
+		changeLog.setTargetStatus(newStatus);
 		this.changeLogRepository.save(changeLog);
 		this.taskRepository.save(task);
 	}
@@ -93,6 +94,7 @@ public class TaskServiceImpl implements TaskService {
 		changeLog.setTask(task);
 		changeLog.setOccuredDate(LocalDate.now());
 		changeLog.setSourceStatus(oldStatus);
+		changeLog.setTargetStatus(newStatus);
 		this.changeLogRepository.save(changeLog);
 		this.taskRepository.save(task);
 	

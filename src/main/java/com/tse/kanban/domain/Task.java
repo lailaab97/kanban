@@ -37,7 +37,7 @@ public class Task {
 	@ManyToMany(mappedBy="tasks", fetch = FetchType.EAGER)
 	private Set<Developer> developers = new HashSet<Developer>();
 	
-	@OneToMany(mappedBy="task", cascade={CascadeType.ALL}, orphanRemoval=true)
+	@OneToMany(mappedBy="task", fetch = FetchType.EAGER, cascade={CascadeType.ALL}, orphanRemoval=true)
 	private Set<ChangeLog> changeLogs = new HashSet<ChangeLog>();
 	
 	public void addDeveloper(Developer developer)
