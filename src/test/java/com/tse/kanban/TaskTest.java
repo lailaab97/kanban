@@ -92,8 +92,8 @@ public class TaskTest {
 				this.changeLogRepository.save(changeLog);
 				
 				task.addChangeLog(changeLog);
-				Collection<ChangeLog> changeLogs = this.taskRepository.findById(task.getId()).orElse(null).getChangeLogs();
-				Assert.assertEquals(1,changeLogs.size());
+				
+				Assert.assertEquals(changeLog.getTask(),task);
 				
 				//Delete
 				this.taskRepository.delete(task);
@@ -101,4 +101,53 @@ public class TaskTest {
 				this.taskTypeRepository.delete(type);
 	}
 	
+	@Test
+	public void clearChangeLogsTest() {
+		//TaskStatus
+		TaskStatus todo = new TaskStatus(1L, "TODO");
+		TaskStatus done = new TaskStatus(2L, "DONE");
+		
+		//TaskType
+		TaskType type = new TaskType();
+		type.setLabel("TestLabel");
+		this.taskTypeRepository.save(type);
+		
+		//Task
+		Task task = new Task();
+		task.setTitle("TEST");
+		task.setNbHoursForecast(1);
+		task.setNbHoursReal(3);
+		task.setCreated(LocalDate.now());
+		task.setType(type);
+		task.setStatus(todo);
+		this.taskRepository.save(task);
+		
+		//ChangeLog 1 
+		ChangeLog changeLog = new ChangeLog();
+		changeLog.setOccuredDate(LocalDate.now());
+		changeLog.setTask(task);
+		changeLog.setSourceStatus(todo);
+		changeLog.setTargetStatus(done);
+		this.changeLogRepository.save(changeLog);
+		
+		task.addChangeLog(changeLog);
+
+		
+		
+		Collection<ChangeLog> changeLogs = this.taskRepository.findById(task.getId()).orElse(null).getChangeLogs();
+		Assert.assertEquals(1,changeLogs.size());
+		Assert.assertEquals(changeLog.getTask(), task);
+		
+		task.clearChangeLogs();
+		this.taskRepository.save(task);
+		Assert.assertEquals(null, changeLog.getTask());
+
+		//Delete
+		this.taskRepository.delete(task);
+		this.changeLogRepository.delete(changeLog);
+		this.taskTypeRepository.delete(type);
+	}
+	
+
+
 }

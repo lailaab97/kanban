@@ -112,4 +112,13 @@ public class TaskServiceImpl implements TaskService {
 	}
 
 
+
+	@Override
+	@Transactional(readOnly = true)
+	public Collection<ChangeLog> findChangeLogsForTask(Task task) {
+		return  this.taskRepository.findById(task.getId()).orElse(null).getChangeLogs();
+
+				}
+
+
 }

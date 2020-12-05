@@ -2,6 +2,7 @@ package com.tse.kanban.service;
 
 import java.util.Collection;
 
+import com.tse.kanban.domain.ChangeLog;
 import com.tse.kanban.domain.Developer;
 import com.tse.kanban.domain.Task;
 import com.tse.kanban.domain.TaskStatus;
@@ -20,4 +21,5 @@ public interface TaskService {
 	//ADDITIONAL
 	TaskType findTaskType(Long id);
 	TaskStatus findTaskStatus(Long id);
+	Collection<ChangeLog> findChangeLogsForTask(Task task);
 }
