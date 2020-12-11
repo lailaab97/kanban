@@ -22,4 +22,5 @@ public interface TaskService {
 	TaskType findTaskType(Long id);
 	TaskStatus findTaskStatus(Long id);
 	Collection<ChangeLog> findChangeLogsForTask(Task task);
+//	public Task createTask(Task task);
 }

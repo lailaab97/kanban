@@ -22,8 +22,11 @@ public class TaskRepositoryTest {
 	
 	@Test
 	public void testFindAllTasks() {
+		Task task = new Task();
+		this.taskRepository.save(task);
 		Collection<Task> taskList = this.taskRepository.findAll();
 		Assert.assertEquals(1, taskList.size());
+		this.taskRepository.delete(task);
 	}
 	
 

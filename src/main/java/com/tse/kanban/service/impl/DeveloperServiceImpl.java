@@ -16,13 +16,11 @@ public class DeveloperServiceImpl implements DeveloperService {
 	private DeveloperRepository developerRepository;
 
 	@Override
-	@Transactional(readOnly = true)
 	public Collection<Developer> findAllDevelopers() {
 		return this.developerRepository.findAll();
 	}
 
 	@Override
-	@Transactional(readOnly = true)
 	public Developer findDeveloper(Long id) {
 		return this.developerRepository.findById(id).orElse(null);
 	}

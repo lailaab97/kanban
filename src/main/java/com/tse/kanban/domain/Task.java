@@ -13,6 +13,9 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotEmpty;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,123 +26,61 @@ import lombok.ToString;
 public class Task {
 
 	private @Id @GeneratedValue Long id;
+	
 	private String title;
+	
 	private Integer nbHoursForecast;
+	
 	private Integer nbHoursReal;
+	
 	private LocalDate created;
 	
 	@ManyToOne
 	private TaskType type;
 	
 	@ManyToOne
-	private TaskStatus status;
+	private TaskStatus status;	
 	
-	@ManyToMany(mappedBy="tasks", fetch = FetchType.EAGER)
-	private Set<Developer> developers = new HashSet<Developer>();
+	@ManyToMany(fetch=FetchType.EAGER)
+	@ToString.Exclude
+	@EqualsAndHashCode.Exclude
+	@JsonIgnoreProperties({"tasks","password","startContract"})
+	@NotEmpty(message = "DEVELOPERS CANNOT BE EMPTY")
+    private Set<Developer> developers;
 	
-	@OneToMany(mappedBy="task", fetch = FetchType.EAGER, cascade={CascadeType.ALL}, orphanRemoval=true)
-	private Set<ChangeLog> changeLogs = new HashSet<ChangeLog>();
+	@OneToMany(mappedBy="task", cascade={CascadeType.ALL}, orphanRemoval=true)
+	@ToString.Exclude
+	@EqualsAndHashCode.Exclude
+	private Set<ChangeLog> changeLogs;
 	
-	public void addDeveloper(Developer developer)
-	{
-		developer.getTasks().add(this);	
+	public Task() {
+		
+		this.developers = new HashSet<>();
+		
+		this.changeLogs = new HashSet<>();
+	}
+	
+	public void addDeveloper(Developer developer) {
+		
+		developer.getTasks().add(this);
+		
 		this.developers.add(developer);
 	}
 	
-	public Long getId() {
-		return id;
-	}
-
-	public Set<ChangeLog> getChangeLogs() {
-		return changeLogs;
-	}
-
-	public void setChangeLogs(Set<ChangeLog> changeLogs) {
-		this.changeLogs = changeLogs;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public Integer getNbHoursForecast() {
-		return nbHoursForecast;
-	}
-
-	public void setNbHoursForecast(Integer nbHoursForecast) {
-		this.nbHoursForecast = nbHoursForecast;
-	}
-
-	public Integer getNbHoursReal() {
-		return nbHoursReal;
-	}
-
-	public void setNbHoursReal(Integer nbHoursReal) {
-		this.nbHoursReal = nbHoursReal;
-	}
-
-	public LocalDate getCreated() {
-		return created;
-	}
-
-	public void setCreated(LocalDate created) {
-		this.created = created;
-	}
-
-	public TaskType getType() {
-		return type;
-	}
-
-	public void setType(TaskType type) {
-		this.type = type;
-	}
-
-	public TaskStatus getStatus() {
-		return status;
-	}
-
-	public void setStatus(TaskStatus status) {
-		this.status = status;
-	}
-
-	public Set<Developer> getDevelopers() {
-		return developers;
-	}
-
-	public void setDevelopers(Set<Developer> developers) {
-		this.developers = developers;
-	}
-
-	public Task(Long id, String title, int nbHoursForecast, int nbHoursReal, LocalDate created) {
-		super();
-		this.id = id;
-		this.title = title;
-		this.nbHoursForecast = nbHoursForecast;
-		this.nbHoursReal = nbHoursReal;
-		this.created = created;
-	}
-	public Task() {
-		super();
-	}
-	
 	public void addChangeLog(ChangeLog changeLog) {
+		
 		changeLog.setTask(this);
+		
 		this.changeLogs.add(changeLog);
 	}
-	
+
 	public void clearChangeLogs() {
-		for(ChangeLog changeLog : this.changeLogs)
-		{
+		
+		for (ChangeLog changeLog :  this.changeLogs) {
+			
 			changeLog.setTask(null);
 		}
+		
+		this.changeLogs.clear();
 	}
-	
 }

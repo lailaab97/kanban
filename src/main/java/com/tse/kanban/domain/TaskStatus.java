@@ -21,18 +21,7 @@ public class TaskStatus {
 	public TaskStatus() {
 		super();
 	}
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getLabel() {
-		return Label;
-	}
-	public void setLabel(String label) {
-		Label = label;
-	}
+	
 	
 	
 	
