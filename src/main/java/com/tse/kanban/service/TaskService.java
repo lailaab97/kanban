@@ -14,13 +14,14 @@ public interface TaskService {
 	public Collection<TaskType> findAllTaskTypes();
 	public Collection<TaskStatus> findAllTaskStatuses();
 	public Task findTask(Long id);
-	public void moveRightTask(Task task);
-	public void moveLeftTask(Task task);
-	
-	
-	//ADDITIONAL
-	TaskType findTaskType(Long id);
-	TaskStatus findTaskStatus(Long id);
-	Collection<ChangeLog> findChangeLogsForTask(Task task);
-//	public Task createTask(Task task);
+	public Task moveRightTask(Task task);
+	public Task moveLeftTask(Task task);
+	public Task changeTaskStatus(Task task, TaskStatus targetStatus);
+	public boolean displayMoveRightForTask(Task task);
+	public boolean displayMoveLeftForTask(Task task);
+	public Task createTask(Task task);
+	public void deleteTask(Task task);
+	public TaskType findTaskType(Long id);
+	public TaskStatus findTaskStatus(Long id);
+	public Collection<ChangeLog> findChangeLogsForTask(Task task);
 }

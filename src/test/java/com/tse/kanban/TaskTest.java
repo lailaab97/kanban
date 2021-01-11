@@ -1,6 +1,5 @@
 package com.tse.kanban;
 
-import java.time.LocalDate;
 import java.util.Collection;
 
 import org.junit.Assert;
@@ -8,146 +7,175 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.tse.kanban.dao.ChangeLogRepository;
-import com.tse.kanban.dao.TaskRepository;
-import com.tse.kanban.dao.TaskStatusRepository;
-import com.tse.kanban.dao.TaskTypeRepository;
+
 import com.tse.kanban.domain.ChangeLog;
 import com.tse.kanban.domain.Developer;
 import com.tse.kanban.domain.Task;
 import com.tse.kanban.domain.TaskStatus;
 import com.tse.kanban.domain.TaskType;
+import com.tse.kanban.service.DeveloperService;
+import com.tse.kanban.service.TaskService;
+import com.tse.kanban.utils.Constants;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@ActiveProfiles(profiles = "test")
 public class TaskTest {
-	
-	@Autowired
-	private TaskTypeRepository taskTypeRepository;
-	
-	@Autowired
-	private TaskStatusRepository taskStatusRepository;
-	
-	@Autowired
-	private TaskRepository taskRepository;
-	
-	@Autowired
-	private ChangeLogRepository changeLogRepository;
 
+	@Autowired
+    private TaskService taskService;
+	
+	@Autowired
+	private DeveloperService developerService;
+	
 	@Test
-	public void testSaveTask() {
+	public void testAddDeveloperToTask() {
+		
+		Developer developer = new Developer();
 		Task task = new Task();
-		task.setTitle("TEST");
-		task.setNbHoursForecast(1);
-		task.setNbHoursReal(3);
-		task.setCreated(LocalDate.now());
-		task.setType(taskTypeRepository.findById(1L).orElse(null));
-		task.setStatus(taskStatusRepository.findById(1L).orElse(null));
-		taskRepository.save(task);
-		
-		Collection<Task> tasks = this.taskRepository.findAll();
-		Assert.assertEquals(2, tasks.size());
-		
-		this.taskRepository.delete(task);
-
-	}
-	@Test
-	public void testAddDeveloper() {
-		Developer dev1 = new Developer();
-		Task task1 = new Task();
-		task1.addDeveloper(dev1);
-		Assert.assertEquals(1, task1.getDevelopers().size());
-		
-	}
-	
-	@Test 
-	public void addChangeLogTest() {
-				//TaskStatus
-				TaskStatus todo = new TaskStatus(1L, "TODO");
-				TaskStatus done = new TaskStatus(2L, "DONE");
-				
-				//TaskType
-				TaskType type = new TaskType();
-				type.setLabel("TestLabel");
-				this.taskTypeRepository.save(type);
-				
-				//Task
-				Task task = new Task();
-				task.setTitle("TEST");
-				task.setNbHoursForecast(1);
-				task.setNbHoursReal(3);
-				task.setCreated(LocalDate.now());
-				task.setType(type);
-				task.setStatus(todo);
-				this.taskRepository.save(task);
-				
-				//ChangeLog
-				ChangeLog changeLog = new ChangeLog();
-				changeLog.setOccuredDate(LocalDate.now());
-				changeLog.setTask(task);
-				changeLog.setSourceStatus(todo);
-				changeLog.setTargetStatus(done);
-				this.changeLogRepository.save(changeLog);
-				
-				task.addChangeLog(changeLog);
-				
-				Assert.assertEquals(changeLog.getTask(),task);
-				
-				//Delete
-				this.taskRepository.delete(task);
-				this.changeLogRepository.delete(changeLog);
-				this.taskTypeRepository.delete(type);
+		task.addDeveloper(developer);		
+		Assert.assertEquals(1, task.getDevelopers().size());
 	}
 	
 	@Test
-	public void clearChangeLogsTest() {
-		//TaskStatus
-		TaskStatus todo = new TaskStatus(1L, "TODO");
-		TaskStatus done = new TaskStatus(2L, "DONE");
+	public void testFindAllTasks() {
 		
-		//TaskType
-		TaskType type = new TaskType();
-		type.setLabel("TestLabel");
-		this.taskTypeRepository.save(type);
+		Collection<Task> tasks = this.taskService.findAllTasks();		
+		Assert.assertEquals(1, tasks.size());
+	}
+	
+	@Test
+	public void testFindAllTaskTypes() {
 		
-		//Task
+		Collection<TaskType> taskTypes = this.taskService.findAllTaskTypes();		
+		Assert.assertEquals(2, taskTypes.size());
+	}
+	
+	@Test
+	public void testFindAllTaskStatus() {
+		
+		Collection<TaskStatus> taskStatus = this.taskService.findAllTaskStatuses();		
+		Assert.assertEquals(4, taskStatus.size());
+	}
+	
+	@Test
+	public void testChangeTaskStatus() {
+		
+		Task task = this.taskService.findAllTasks().iterator().next();		
+		TaskStatus status1 = this.taskService.findTaskStatus(1L);		
+		TaskStatus status2 = this.taskService.findTaskStatus(2L);		
+		task = this.taskService.changeTaskStatus(task, status2);		
+		Assert.assertEquals(status2, task.getStatus());		
+		Collection<ChangeLog> changeLogs = this.taskService.findChangeLogsForTask(task);		
+		Assert.assertEquals(1, changeLogs.size());		
+		ChangeLog changeLog = changeLogs.iterator().next();		
+		Assert.assertEquals(status1, changeLog.getSourceStatus());
+		Assert.assertEquals(status2, changeLog.getTargetStatus());		
+	}
+	
+	@Test
+	public void testDisplayMoveRightForTask() {
+		
+		TaskStatus todoStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_TODO_ID);
+		TaskStatus doingStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_DOING_ID);		
+		TaskStatus testStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_TEST_ID);
+		TaskStatus doneStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_DONE_ID);
+		Task task = new Task();		
+		task.setStatus(todoStatus);		
+		Assert.assertTrue(this.taskService.displayMoveRightForTask(task));		
+		task.setStatus(doingStatus);		
+		Assert.assertTrue(this.taskService.displayMoveRightForTask(task));		
+		task.setStatus(testStatus);		
+		Assert.assertTrue(this.taskService.displayMoveRightForTask(task));		
+		task.setStatus(doneStatus);		
+		Assert.assertFalse(this.taskService.displayMoveRightForTask(task));	}
+	
+	@Test
+	public void testDisplayMoveLeftForTask() {
+		
+		TaskStatus todoStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_TODO_ID);		
+		TaskStatus doingStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_DOING_ID);		
+		TaskStatus testStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_TEST_ID);		
+		TaskStatus doneStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_DONE_ID);		
+		Task task = new Task();		
+		task.setStatus(todoStatus);		
+		Assert.assertFalse(this.taskService.displayMoveLeftForTask(task));		
+		task.setStatus(doingStatus);		
+		Assert.assertTrue(this.taskService.displayMoveLeftForTask(task));		
+		task.setStatus(testStatus);		
+		Assert.assertTrue(this.taskService.displayMoveLeftForTask(task));		
+		task.setStatus(doneStatus);
+		Assert.assertTrue(this.taskService.displayMoveLeftForTask(task));
+	}
+	
+	@Test
+	public void testMoveRightTask() {
+		
+		Developer developer = this.developerService.findAllDevelopers().iterator().next();
+		TaskStatus todoStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_TODO_ID);
+		TaskStatus doingStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_DOING_ID);
+		TaskStatus testStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_TEST_ID);
+		TaskStatus doneStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_DONE_ID);
 		Task task = new Task();
-		task.setTitle("TEST");
-		task.setNbHoursForecast(1);
-		task.setNbHoursReal(3);
-		task.setCreated(LocalDate.now());
-		task.setType(type);
-		task.setStatus(todo);
-		this.taskRepository.save(task);
-		
-		//ChangeLog 1 
-		ChangeLog changeLog = new ChangeLog();
-		changeLog.setOccuredDate(LocalDate.now());
-		changeLog.setTask(task);
-		changeLog.setSourceStatus(todo);
-		changeLog.setTargetStatus(done);
-		this.changeLogRepository.save(changeLog);
-		
-		task.addChangeLog(changeLog);
-
-		
-		
-		Collection<ChangeLog> changeLogs = this.taskRepository.findById(task.getId()).orElse(null).getChangeLogs();
-		Assert.assertEquals(1,changeLogs.size());
-		Assert.assertEquals(changeLog.getTask(), task);
-		
-		task.clearChangeLogs();
-		this.taskRepository.save(task);
-		Assert.assertEquals(null, changeLog.getTask());
-
-		//Delete
-		this.taskRepository.delete(task);
-		this.changeLogRepository.delete(changeLog);
-		this.taskTypeRepository.delete(type);
+		task.setNbHoursForecast(0);
+		task.setNbHoursReal(0);
+		task.setTitle("title");
+		task.setStatus(todoStatus);
+		task.addDeveloper(developer);
+		task = this.taskService.createTask(task);
+		task = this.taskService.moveRightTask(task);
+		Assert.assertEquals(doingStatus, task.getStatus());
+		Collection<ChangeLog> changeLogs = this.taskService.findChangeLogsForTask(task);
+		Assert.assertEquals(1, changeLogs.size());
+		ChangeLog changeLog = changeLogs.iterator().next();
+		Assert.assertEquals(todoStatus, changeLog.getSourceStatus());
+		Assert.assertEquals(doingStatus, changeLog.getTargetStatus());
+		task = this.taskService.moveRightTask(task);
+		Assert.assertEquals(testStatus, task.getStatus());
+		task = this.taskService.moveRightTask(task);
+		Assert.assertEquals(doneStatus, task.getStatus());
+		Assert.assertEquals(3, task.getChangeLogs().size());
+		this.taskService.deleteTask(task);
 	}
 	
-
-
+	@Test
+	public void testMoveLeftTask() {
+		
+		Developer developer = this.developerService.findAllDevelopers().iterator().next();
+		TaskStatus todoStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_TODO_ID);
+		TaskStatus doingStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_DOING_ID);
+		TaskStatus testStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_TEST_ID);
+		TaskStatus doneStatus = this.taskService.findTaskStatus(Constants.TASK_STATUS_DONE_ID);
+		Task task = new Task();
+		task.setNbHoursForecast(0);
+		task.setNbHoursReal(0);
+		task.setTitle("title");		
+		task.addDeveloper(developer);
+		task = this.taskService.createTask(task);
+		task = this.taskService.moveRightTask(task);
+		task = this.taskService.moveRightTask(task); 
+		task = this.taskService.moveRightTask(task); 
+		task = this.taskService.moveLeftTask(task);
+		Assert.assertEquals(testStatus, task.getStatus());
+		Collection<ChangeLog> changeLogs = this.taskService.findChangeLogsForTask(task);
+		Assert.assertEquals(4, changeLogs.size());
+		boolean lastChangeLogFound = false;
+		for (ChangeLog changeLog : changeLogs) {
+			if (doneStatus.equals(changeLog.getSourceStatus())) {
+				lastChangeLogFound = true;
+				Assert.assertEquals(testStatus, changeLog.getTargetStatus());
+			}
+		}
+		
+		Assert.assertTrue(lastChangeLogFound);		
+		task = this.taskService.moveLeftTask(task);		
+		Assert.assertEquals(doingStatus, task.getStatus());		
+		task = this.taskService.moveLeftTask(task);
+		Assert.assertEquals(todoStatus, task.getStatus());
+		Assert.assertEquals(6, task.getChangeLogs().size());
+		this.taskService.deleteTask(task);
+	}
 }

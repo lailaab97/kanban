@@ -53,43 +53,32 @@ Please send it at the end of session 2, then at the end of session 3, then at th
 
 # Steps 
 
-## Step 1
+## Step 4
 
-Initialize a SpringBoot Maven project with Spring Initializr, with JPA and H2 (in-memory database) as dependencies.
+Define controllers DeveloperController and TaskController.
 
-Import this Maven project into Eclipse.
+These controllers must provide following REST endpoints :
+- GET /developers : JSON export of developers
+- GET /tasks : JSON export of tasks
 
-## Step 2
+Write unit tests for these GET endpoints.
 
-Create classes Developer, Task, TaskType, TaskStatus, and ChangeLog in domain layer, as JPA entities.
+## Step 5
 
-Following class diagram shows relations between these entities :
+Improve controller TaskController.
 
-![Entities Class Diagram](entities.png "Entities Class Diagram")
+These controller must provide following REST endpoints :
+- POST /tasks : create a new task (JSON description of the task in the body)
+- PATCH /tasks/{id} : move a task (left or right, depending on the JSON content of the body)
 
-Create a repository for each of theses classes.
+Write unit tests for these POST and PATCH endpoints.
 
-Create a CommandLine Runner to populate the db before unit tests.
+## Step 6
 
-Write a unit test for method addDeveloper of class Task.
+Use Bean Validation API on your Task entity to enable validation.
 
-Write a unit test for method findAll of DeveloperRepository.
+Optionnaly, customize your API error message in cas of invalid json posted data. 
 
-Write a unit test for method findAll, save of TaskRepository.
+## Step 7 (Optional)
 
-## Step 3
-
-Create DeveloperService and TaskService interface and implementations.
-
-DeveloperService provides methods with following signatures :
-- public List<Developer> findAllDevelopers();
-
-TaskService provides methods with following signatures :
-- public Collection<Task> findAllTasks();
-- public Task findTask(Long id);
-- public Task moveRightTask(Task task);
-- public Task moveLeftTask(Task task);
-
-Maybe you will need additional methods.
-
-Write unit tests for all services methods.
+Set up SpringFox to enable swagger-ui documentation for exposed REST API

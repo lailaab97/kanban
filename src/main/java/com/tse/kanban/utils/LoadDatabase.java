@@ -22,6 +22,7 @@ import com.tse.kanban.domain.TaskType;
 
 import lombok.extern.slf4j.Slf4j;
 
+
 @Configuration
 @Slf4j
 public class LoadDatabase {
@@ -43,37 +44,36 @@ public class LoadDatabase {
 	
 	private void initDevelopers(DeveloperRepository developerRepository) {
 		
-		Developer devRG = new Developer();
-		devRG.setEmail("remy.girodon@gmail.com");
-		devRG.setFirstname("Rémy");
-		devRG.setLastname("Girodon");
-		devRG.setPassword("abc123");
-		devRG.setStartContract(LocalDate.of(2017, Month.NOVEMBER, 1));
-		developerRepository.save(devRG);
-		log.info(devRG + " saved to database.");
+		Developer dev1 = new Developer();
+		dev1.setEmail("laila.abouzaid@gmail.com");
+		dev1.setFirstname("Laila");
+		dev1.setLastname("Abouzaid");
+		dev1.setPassword("laila111");
+		dev1.setStartContract(LocalDate.of(2019, Month.JULY, 1));
+		developerRepository.save(dev1);
+		log.info(dev1 + " saved to database.");
 		
-		Developer devFXC = new Developer();
-		devFXC.setEmail("francois-xavier.cote@gmail.com");
-		devFXC.setFirstname("François-Xavier");
-		devFXC.setLastname("Cote");
-		devFXC.setPassword("abc123");
-		devFXC.setStartContract(LocalDate.of(2019, Month.SEPTEMBER, 1));
-		developerRepository.save(devFXC);
-		log.info(devFXC + " saved to database.");
+		Developer dev2 = new Developer();
+		dev2.setEmail("asmae@gmail.com");
+		dev2.setFirstname("Asmae");
+		dev2.setLastname("Nedday");
+		dev2.setPassword("asmae222");
+		dev2.setStartContract(LocalDate.of(2020, Month.AUGUST, 1));
+		developerRepository.save(dev2);
+		log.info(dev2 + " saved to database.");
 		
-		Developer devPJD = new Developer();
-		devPJD.setEmail("pierre-jean.drevet@gmail.com");
-		devPJD.setFirstname("Pierre-Jean");
-		devPJD.setLastname("Drevet");
-		devPJD.setPassword("abc123");
-		devPJD.setStartContract(LocalDate.of(2020, Month.JANUARY, 1));
-		developerRepository.save(devPJD);
-		log.info(devPJD + " saved to database.");
+		Developer dev3 = new Developer();
+		dev3.setEmail("mariam@gmail.com");
+		dev3.setFirstname("Mariam");
+		dev3.setLastname("Bouhriz");
+		dev3.setPassword("mariam333");
+		dev3.setStartContract(LocalDate.of(2021, Month.SEPTEMBER, 1));
+		developerRepository.save(dev3);
+		log.info(dev3 + " saved to database.");
 	}
 	
-	private void initTaskStatusAndTypes(TaskStatusRepository taskStatusRepository,
-										TaskTypeRepository taskTypeRepository) {
-		
+	private void initTaskStatusAndTypes(TaskStatusRepository taskStatusRepository,TaskTypeRepository taskTypeRepository) {
+		//Statuses
 		TaskStatus todo = new TaskStatus(Constants.TASK_STATUS_TODO_ID, Constants.TASK_STATUS_TODO_LABEL);
 		taskStatusRepository.save(todo);
 		log.info(todo + " saved to database.");
@@ -90,6 +90,7 @@ public class LoadDatabase {
 		taskStatusRepository.save(done);
 		log.info(done + " saved to database.");
 		
+		//TYPES
 		TaskType feature = new TaskType(Constants.TASK_TYPE_FEATURE_ID, Constants.TASK_TYPE_FEATURE_LABEL);
 		taskTypeRepository.save(feature);
 		log.info(feature + " saved to database.");
@@ -108,16 +109,16 @@ public class LoadDatabase {
 		
 		return args -> {			
 			initTaskStatusAndTypes(taskStatusRepository, taskTypeRepository);
-			
+			//Developer
 			Developer dev1 = new Developer();
 			dev1.setEmail("dev1@dev.dev");
 			dev1.setFirstname("dev1");
 			dev1.setLastname("dev1");
 			dev1.setPassword("dev1");
-			dev1.setStartContract(LocalDate.of(2017, Month.NOVEMBER, 1));
+			dev1.setStartContract(LocalDate.of(2020, Month.JULY, 1));
 			developerRepository.save(dev1);
 			log.info(dev1 + " saved to database.");
-			
+			//Task
 			Task task1 = new Task();
 			task1.setCreated(LocalDate.now());
 			task1.setTitle("task1");
@@ -129,7 +130,6 @@ public class LoadDatabase {
 			taskRepository.save(task1);
 			log.info(task1 + " saved to database.");
 			
-			log.info("Wow it seems OK for Kanban app initialization !");
 		};
 	}
 }

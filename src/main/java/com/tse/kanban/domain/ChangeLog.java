@@ -63,7 +63,7 @@ public class ChangeLog {
 		return occuredDate;
 	}
 
-	public void setOccuredDate(LocalDate localDate) {
+	public void setOccured(LocalDate localDate) {
 		this.occuredDate = localDate;
 	}
 
